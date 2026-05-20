@@ -3,6 +3,8 @@ import "dotenv/config";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/auth.route.js";
 import userRoutes from "./routes/user.route.js";
@@ -11,9 +13,10 @@ import chatRoutes from "./routes/chat.route.js";
 import { connectDB } from "./lib/db.js";
 
 const app = express();
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 5001;
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(
   cors({
@@ -31,11 +34,17 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+
+if (process.env.NODE_ENV === "production" || fs.existsSync(frontendDistPath)) {
+  app.use(express.static(frontendDistPath));
 
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running. Please build the frontend to serve the UI.");
   });
 }
 
