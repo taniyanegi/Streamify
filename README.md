@@ -1,6 +1,6 @@
 <h1 align="center">✨ Fullstack Chat & Video Calling App ✨</h1>
 
-![Demo App](https://streamify-web-app-hen3.onrender.com)
+live link - https://streamify-web-app-hen3.onrender.com
 
 Highlights:
 
